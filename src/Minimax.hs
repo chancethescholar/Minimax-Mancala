@@ -26,12 +26,17 @@ instance GameState MancalaGameState where
     possibleMoves _ = [1,3,5]
     startGameState _ _= MancalaGameState initialBoard Computer Computer
 
-{-
-Test:
-> gs = MancalaGameState initialBoard Computer Computer
-> minimax gs False 0 8
-(80,Just 5)
--}
+
+--Test:
+-- ghc -threaded -rtsopts -eventlog --make -main-is Minimax  Minimax.hs -package vector
+-- time ./Minimax +RTS -ls -s
+-- time ./Minimax +RTS -N2 -ls -s
+main :: IO()
+main = do
+    let gs = MancalaGameState initialBoard Computer Computer
+    print (minimax gs False 0 8)
+    --(80,Just 5)
+
 
 minimax :: (GameState a) => a -> Bool -> Int -> Int -> (Int, Maybe Int)
 minimax gs _ depth depthlimit 
