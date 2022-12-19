@@ -30,6 +30,16 @@
   (major1) == 0 && (major2) <  1 || \
   (major1) == 0 && (major2) == 1 && (minor) <= 0)
 #endif /* MIN_VERSION_mancala */
+/* package parallel-3.2.2.0 */
+#ifndef VERSION_parallel
+#define VERSION_parallel "3.2.2.0"
+#endif /* VERSION_parallel */
+#ifndef MIN_VERSION_parallel
+#define MIN_VERSION_parallel(major1,major2,minor) (\
+  (major1) <  3 || \
+  (major1) == 3 && (major2) <  2 || \
+  (major1) == 3 && (major2) == 2 && (minor) <= 2)
+#endif /* MIN_VERSION_parallel */
 /* package vector-0.13.0.0 */
 #ifndef VERSION_vector
 #define VERSION_vector "0.13.0.0"

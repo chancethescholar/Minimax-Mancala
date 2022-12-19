@@ -3,25 +3,46 @@ where
 import Debug.Trace
 import Data.List
 import Data.Ord
-
-class GameState a where
-    evaluate    :: a -> Int
-    gameOver    :: a -> Bool
-    possibleMoves    :: a -> [Int]
-    makeSuccessor    :: a -> Int -> a
-    isMaximizing    :: a -> Bool
+import Mancala
+import qualified Data.Vector   as V
+import Control.Parallel.Strategies
 
 {-
 Test:
-> gs = MancalaGameState initialBoard Computer Computer
-> minimax gs False 0 8 (-1000) 1000
+main :: IO()
+main = do
+    let board = Board $ V.fromList [1,2,7,4,0,1,32,1,0,2,1,1,2,18]
+    let gs = MancalaGameState board Computer Player2
+    print (minimax gs False 0 8)
 
 -- ghc -threaded -rtsopts -eventlog --make -main-is Minimax  Minimax.hs -package vector
 -- time ./Minimax +RTS -ls -s
 -- time ./Minimax +RTS -N2 -ls -s
 -}
 
-minimax   :: (GameState a) => a -> Int -> Int -> Int -> Int -> (Int, Maybe Int)
+minimax    :: (GameState a) => a -> Bool -> Int -> Int -> (Int, Maybe Int)
+minimax gs _ depth depthlimit | depth == depthlimit || gameOver gs = (evaluate gs, Nothing)
+minimax gs minimize depth depthlimit =
+    let minOrMax = (if minimize then minimumBy else maximumBy) (comparing fst) 
+        successors = (possibleMoves gs)
+        scores = (map fst $ map (\succ -> (minimax (makeSuccessor gs succ) (not minimize) (depth+1) depthlimit)) successors) `using` parList rseq
+        wrappedSuccessors = map Just successors 
+        scoreSuccPairs = zip scores wrappedSuccessors in
+    minOrMax scoreSuccPairs
+
+{-
+minimax    :: (GameState a) => a -> Bool -> Int -> Int -> (Int, Maybe Int)
+minimax gs _ depth depthlimit | depth == depthlimit || gameOver gs = (evaluate gs, Nothing)
+minimax gs minimize depth depthlimit =
+    let minOrMax = (if minimize then minimumBy else maximumBy) (comparing fst)
+        successors = (possibleMoves gs)
+        scores = map fst $ map (\succ -> (minimax (makeSuccessor gs succ) (not minimize) (depth+1) depthlimit)) successors
+        wrappedSuccessors = map Just successors
+        scoreSuccPairs = zip scores wrappedSuccessors in
+    minOrMax scoreSuccPairs
+-}
+
+{-minimax   :: (GameState a) => a -> Int -> Int -> Int -> Int -> (Int, Maybe Int)
 minimax gs _ _ _ _ | gameOver gs = (evaluate gs, Nothing)
 minimax gs depth depthlimit _ _ | depth == depthlimit = (evaluate gs, Nothing)
 minimax gs depth depthlimit alpha beta =
@@ -34,7 +55,7 @@ minimax gs depth depthlimit alpha beta =
                 if (newAlpha >= b)
                 then (newAlpha, Just x)
                 else alphabetafold xs (max a newAlpha) b (if newAlpha > a then x else bestChild)
-
+-} 
 alphabetamax    :: (GameState a) => a -> Int -> Int -> Int -> Int -> Int
 alphabetamax gs _ _ _ _ | gameOver gs = evaluate gs
 alphabetamax gs depth depthlimit _ _ | depth == depthlimit = evaluate gs
