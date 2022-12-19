@@ -14,7 +14,11 @@ class GameState a where
 {-
 Test:
 > gs = MancalaGameState initialBoard Computer Computer
-> alphabeta gs False 0 8 (-1000) 1000
+> minimax gs False 0 8 (-1000) 1000
+
+-- ghc -threaded -rtsopts -eventlog --make -main-is Minimax  Minimax.hs -package vector
+-- time ./Minimax +RTS -ls -s
+-- time ./Minimax +RTS -N2 -ls -s
 -}
 
 minimax   :: (GameState a) => a -> Int -> Int -> Int -> Int -> (Int, Maybe Int)

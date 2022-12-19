@@ -1,4 +1,4 @@
-name:                minimax
+name:                mancala
 version:             0.1.0.0
 author:              Chance Onyiorah
 build-type:          Simple
@@ -17,8 +17,8 @@ library
 executable mancala
   hs-source-dirs:      app
   main-is:             Play.hs
-  ghc-options:         -threaded -rtsopts
+  ghc-options:         -threaded -rtsopts -eventlog
   build-depends:       base
-                     , minimax
+                     , mancala
                      , vector
   default-language:    Haskell2010

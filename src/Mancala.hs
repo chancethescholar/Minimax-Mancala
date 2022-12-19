@@ -12,7 +12,7 @@ type Stones = Int
 data Board = Board (V.Vector Int)
     deriving (Show)
 
-initialBoard = Board $ V.fromList [4,4,4,4,4,4,0,4,4,4,4,4,4,0]
+initialBoard = Board $ V.fromList [6,6,6,6,6,6,0,6,6,6,6,6,6,0]
 
 data MancalaGameState = MancalaGameState Board Player Player
     deriving Show
