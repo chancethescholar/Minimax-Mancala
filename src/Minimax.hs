@@ -7,8 +7,8 @@ import Mancala
 import qualified Data.Vector   as V
 import Control.Parallel.Strategies
 
-{-
-Test:
+
+--Test:
 main :: IO()
 main = do
     let board = Board $ V.fromList [1,2,7,4,0,1,32,1,0,2,1,1,2,18]
@@ -18,34 +18,31 @@ main = do
 -- ghc -threaded -rtsopts -eventlog --make -main-is Minimax  Minimax.hs -package vector
 -- time ./Minimax +RTS -ls -s
 -- time ./Minimax +RTS -N2 -ls -s
--}
 
 minimax    :: (GameState a) => a -> Bool -> Int -> Int -> (Int, Maybe Int)
 minimax gs _ depth depthlimit | depth == depthlimit || gameOver gs = (evaluate gs, Nothing)
 minimax gs minimize depth depthlimit =
     let minOrMax = (if minimize then minimumBy else maximumBy) (comparing fst) 
         successors = (possibleMoves gs)
-        scores = (map fst $ map (\succ -> (minimax (makeSuccessor gs succ) (not minimize) (depth+1) depthlimit)) successors) `using` parList rseq
+        scores = map fst $ map (\succ -> (minimax (makeSuccessor gs succ) (not minimize) (depth+1) depthlimit)) successors
         wrappedSuccessors = map Just successors 
         scoreSuccPairs = zip scores wrappedSuccessors in
     minOrMax scoreSuccPairs
 
-{-
-minimax    :: (GameState a) => a -> Bool -> Int -> Int -> (Int, Maybe Int)
-minimax gs _ depth depthlimit | depth == depthlimit || gameOver gs = (evaluate gs, Nothing)
-minimax gs minimize depth depthlimit =
-    let minOrMax = (if minimize then minimumBy else maximumBy) (comparing fst)
+minimaxPar    :: (GameState a) => a -> Bool -> Int -> Int -> (Int, Maybe Int)
+minimaxPar gs _ depth depthlimit | depth == depthlimit || gameOver gs = (evaluate gs, Nothing)
+minimaxPar gs minimize depth depthlimit =
+    let minOrMax = (if minimize then minimumBy else maximumBy) (comparing fst) 
         successors = (possibleMoves gs)
-        scores = map fst $ map (\succ -> (minimax (makeSuccessor gs succ) (not minimize) (depth+1) depthlimit)) successors
-        wrappedSuccessors = map Just successors
+        scores = (map fst $ map (\succ -> (minimaxPar (makeSuccessor gs succ) (not minimize) (depth+1) depthlimit)) successors) `using` parList rseq
+        wrappedSuccessors = map Just successors 
         scoreSuccPairs = zip scores wrappedSuccessors in
     minOrMax scoreSuccPairs
--}
-
-{-minimax   :: (GameState a) => a -> Int -> Int -> Int -> Int -> (Int, Maybe Int)
-minimax gs _ _ _ _ | gameOver gs = (evaluate gs, Nothing)
-minimax gs depth depthlimit _ _ | depth == depthlimit = (evaluate gs, Nothing)
-minimax gs depth depthlimit alpha beta =
+{-
+alphabeta   :: (GameState a) => a -> Int -> Int -> Int -> Int -> (Int, Maybe Int)
+alphabeta gs _ _ _ _ | gameOver gs = (evaluate gs, Nothing)
+alphabeta gs depth depthlimit _ _ | depth == depthlimit = (evaluate gs, Nothing)
+alphabeta gs depth depthlimit alpha beta =
     alphabetafold successors alpha beta (-1)
     where   successors = possibleMoves gs
             alphabetafold [] a _ bestChild = (a, Just bestChild)
@@ -55,7 +52,7 @@ minimax gs depth depthlimit alpha beta =
                 if (newAlpha >= b)
                 then (newAlpha, Just x)
                 else alphabetafold xs (max a newAlpha) b (if newAlpha > a then x else bestChild)
--} 
+
 alphabetamax    :: (GameState a) => a -> Int -> Int -> Int -> Int -> Int
 alphabetamax gs _ _ _ _ | gameOver gs = evaluate gs
 alphabetamax gs depth depthlimit _ _ | depth == depthlimit = evaluate gs
@@ -78,3 +75,4 @@ alphabetaHelper gs (x:xs) a b depth depthlimit =
     if (newBeta <= a)
         then newBeta
         else alphabetaHelper gs xs a (min b newBeta) depth depthlimit
+        -}

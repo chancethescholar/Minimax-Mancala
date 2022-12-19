@@ -18,7 +18,7 @@ library
 executable mancala
   hs-source-dirs:      app
   main-is:             Play.hs
-  ghc-options:         -threaded -rtsopts -eventlog
+  ghc-options:         -threaded -rtsopts -eventlog -with-rtsopts=-N
   build-depends:       base
                      , mancala
                      , vector
