@@ -7,15 +7,18 @@ import Mancala
 import qualified Data.Vector   as V
 import Control.Parallel.Strategies
 
-
+{-
 --Test:
 main :: IO()
 main = do
-    let board = Board $ V.fromList [1,2,7,4,0,1,32,1,0,2,1,1,2,18]
+    let board = Board $ V.fromList [6,6,6,6,6,6,0,6,6,6,6,6,6,0]
     let gs = MancalaGameState board Computer Player2
     --print (minimax gs False 0 8)
-    print (alphabeta gs 0 8 (-1000) 1000)
-
+    print (minimaxPar gs False 0 8) 
+    applyMove (MancalaGameState board Computer Computer) m
+    let gs = MancalaGameState board Computer Player2
+    --print (alphabeta gs 0 8 (-1000) 1000)
+-}
 -- ghc -threaded -rtsopts -eventlog --make -main-is Minimax  Minimax.hs -package vector
 -- time ./Minimax +RTS -ls -s
 -- time ./Minimax +RTS -N2 -ls -s

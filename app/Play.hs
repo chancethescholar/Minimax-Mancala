@@ -115,6 +115,7 @@ printGameState (MancalaGameState b p _) = do
     printPlayer p
     printBoard b
 
+applyMove :: MancalaGameState -> Int -> IO() 
 applyMove gs move = return (distributeMarbles gs move) >>= playGame
 
 humanMoveGS (MancalaGameState board player _) = do
