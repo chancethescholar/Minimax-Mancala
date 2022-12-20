@@ -27,7 +27,7 @@ instance GameState MancalaGameState where
     evaluate (MancalaGameState board _ player) = getScore board player
     gameOver (MancalaGameState board _ _) = isGameOver board
     possibleMoves (MancalaGameState board player _) = getPossibleMoves board player
-    makeSuccessor = distributeMarbles
+    makePossibility = distributeMarbles
     isMaximizing (MancalaGameState _ computer player) = computer == player
 
 rowTotal :: Board -> Player -> Int
