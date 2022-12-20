@@ -115,9 +115,10 @@ printGameState (MancalaGameState b p _) = do
     printPlayer p
     printBoard b
 
-applyMove :: MancalaGameState -> Int -> IO() 
+applyMove :: MancalaGameState -> Int -> IO () 
 applyMove gs move = return (distributeMarbles gs move) >>= playGame
 
+humanMoveGS :: MancalaGameState -> IO Int
 humanMoveGS (MancalaGameState board player _) = do
     m <- getMove player board
     putStrLn ""
@@ -134,23 +135,26 @@ makeMoveGS gs = do
         Nothing -> error "Invalid move: Nothing"
 
 playGame :: MancalaGameState -> IO()
-playGame (MancalaGameState board computer player) | rowEmpty board Computer || rowEmpty board Player2 =
-    let winString = case (evaluate (MancalaGameState board computer player)) of
+playGame (MancalaGameState board computer player) | rowEmpty board Computer || rowEmpty board Player2 = do
+    putStrLn $ "Game over. " ++ winString
+    printGameState (MancalaGameState board computer player)
+    where winString = case (evaluate (MancalaGameState board computer player)) of
             x | x > 0 -> "Winner is " ++ (show player)
             x | x < 0 -> "Winner is " ++ (show other)
             0         -> "Tie."
             where other | player == Computer = Player2
-                            | otherwise = Computer
-    in  (putStrLn $ "Game over. " ++ winString) >> printGameState (MancalaGameState board computer player)
-playGame (MancalaGameState board Computer Computer) =
-    printGameState (MancalaGameState board Computer Computer) >> putStrLn "Computer's turn" >> makeMoveGS (MancalaGameState board Computer Computer) >>= \m ->
-        applyMove (MancalaGameState board Computer Computer) m
-playGame (MancalaGameState board Player2 x) =
+                        | otherwise = Computer
+playGame (MancalaGameState board Computer Computer) = do
+    printGameState (MancalaGameState board Computer Computer) 
+    putStrLn "Computer's turn" 
+    move <- makeMoveGS (MancalaGameState board Computer Computer)
+    applyMove (MancalaGameState board Computer Computer) move
+playGame (MancalaGameState board Player2 x) = do
     printGameState (MancalaGameState board Player2 x)
-        >>  putStr "Enter move: "
-        >>  hFlush stdout
-        >>  humanMoveGS (MancalaGameState board Player2 x)
-        >>= \m -> applyMove (MancalaGameState board Player2 x) m
+    putStr "Enter move: "
+    hFlush stdout
+    move <- humanMoveGS (MancalaGameState board Player2 x)
+    applyMove (MancalaGameState board Player2 x) move
 
 startGameState = MancalaGameState initialBoard Computer Computer
 main = do

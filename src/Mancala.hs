@@ -117,6 +117,7 @@ placeLastStone (Board board) player pos =
           nextPlayer     | pos == storePos player = player 
                          | otherwise = otherPlayer
 
+-- get only changes updates to update score
 takeReverse :: [Int] -> Int -> [Int]
 takeReverse listUpdates count = takeReverse' listUpdates count []  
     where takeReverse' (x : _ ) 1     acc = x : acc
