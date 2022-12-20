@@ -8,7 +8,7 @@ class GameState a where
     evaluate    :: a -> Int
     gameOver    :: a -> Bool
     possibleMoves    :: a -> [Int]
-    makeSuccessor    :: a -> Int -> a
+    makePossibility    :: a -> Int -> a
     isMaximizing    :: a -> Bool
 
 data Player = Computer | Player2
