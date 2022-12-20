@@ -28,13 +28,11 @@ instance GameState MancalaGameState where
     makePossibility = distributeMarbles
     isMaximizing (MancalaGameState _ computer player) = computer == player
 
-rowTotal :: Board -> Player -> Int
-rowTotal (Board board) player =
-    foldr (+) 0 $ map (board V.!) (currentPlayerRows player)
-
 rowEmpty :: Board -> Player -> Bool
 rowEmpty (Board board) player =
-    null $ filter (\i -> (board V.! i) /= 0) (currentPlayerRows player)
+    rowTotal == 0
+    where rowTotal | player == Computer = board V.! 0 + board V.! 1 + board V.! 2 + board V.! 3 + board V.! 4 + board V.! 5
+                   | otherwise = board V.! 7 + board V.! 8 + board V.! 9 + board V.! 10 + board V.! 11 + board V.! 12
 
 mancalaTotal :: Board -> Player -> Int
 mancalaTotal (Board board) player = board V.! (storePos player)
@@ -61,12 +59,9 @@ getScore board player = (if (rowEmpty board Computer || rowEmpty board Player2) 
 
 getPossibleMoves :: Board -> Player -> [Int]
 getPossibleMoves (Board board) player =
-    filter (\i -> (board V.! i) /= 0) (currentPlayerRows player)
-
-currentPlayerRows :: Player -> [Int]
-currentPlayerRows player
-                    | player == Computer = [0 .. 5]
-                    | otherwise = [7 .. 12]
+    filter (\i -> (board V.! i) /= 0) rows
+    where rows | player == Computer = [0..5]
+               | otherwise = [7..12]
 
 distributeMarbles :: MancalaGameState -> Int -> MancalaGameState
 distributeMarbles (MancalaGameState (Board b) computer player) pos = (MancalaGameState finalNewBoard nextPlayer player)
@@ -74,7 +69,8 @@ distributeMarbles (MancalaGameState (Board b) computer player) pos = (MancalaGam
     count          = (b V.! pos)
     boardGetMarbles = Board (b V.// [(pos, 0)])
     (newBoard, nextPlayer) = placeStones boardGetMarbles computer (pos + 1) count
-    finalNewBoard       = if (rowEmpty newBoard Computer || rowEmpty newBoard Player2) then endGameMove newBoard else newBoard
+    finalNewBoard | (rowEmpty newBoard Computer || rowEmpty newBoard Player2) = endGameMove newBoard 
+                  | otherwise = newBoard
 
 endGameMove :: Board -> Board
 endGameMove (Board b) =
@@ -85,11 +81,11 @@ endGameMove (Board b) =
            ++ playerZeros
            )  where
     totalFunc = \l -> sum $ map (\i -> b V.! i) l
-    computerTotal   = totalFunc (currentPlayerRows Computer)
-    playerTotal   = totalFunc (currentPlayerRows Player2)
+    computerTotal   = totalFunc [0 .. 5]
+    playerTotal   = totalFunc [7 .. 12]
     zeroFunc  = map (\i -> (i, 0))
-    computerZeros   = zeroFunc (currentPlayerRows Computer)
-    playerZeros   = zeroFunc (currentPlayerRows Player2)
+    computerZeros   = zeroFunc [0 .. 5]
+    playerZeros   = zeroFunc [7 .. 12]
 
 nextPos :: Player -> Int -> Int
 nextPos player pos | (player == Computer && pos == 12) = 0

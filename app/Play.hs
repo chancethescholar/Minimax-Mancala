@@ -135,6 +135,7 @@ makeMoveGS gs = do
         Nothing -> error "Invalid move: Nothing"
 
 playGame :: MancalaGameState -> IO()
+-- if game is over print results
 playGame (MancalaGameState board computer player) | rowEmpty board Computer || rowEmpty board Player2 = do
     putStrLn $ "Game over. " ++ winString
     printGameState (MancalaGameState board computer player)
@@ -144,6 +145,7 @@ playGame (MancalaGameState board computer player) | rowEmpty board Computer || r
             0         -> "Tie."
             where other | player == Computer = Player2
                         | otherwise = Computer
+-- else print current game state and get next move
 playGame (MancalaGameState board Computer Computer) = do
     printGameState (MancalaGameState board Computer Computer) 
     putStrLn "Computer's turn" 
