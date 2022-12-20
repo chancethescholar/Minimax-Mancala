@@ -124,7 +124,7 @@ humanMoveGS (MancalaGameState board player _) = do
 
 makeMoveGS :: MancalaGameState -> IO Int
 makeMoveGS gs = do
-    let (score, move) = minimax gs False 0 8
+    let (score, move) = minimaxPar gs False 0 8
     case move of
         (Just x) -> do
             printf "Computer move: '%s'.\n\n"
