@@ -14,8 +14,6 @@ class GameState a where
 data Player = Computer | Player2
     deriving (Eq, Show)
 
-type Stones = Int
-
 data Board = Board (V.Vector Int)
     deriving (Show)
 
