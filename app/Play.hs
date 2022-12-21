@@ -127,24 +127,25 @@ humanMoveGS (MancalaGameState board player _) = do
 makeMoveGS :: MancalaGameState -> IO Int
 makeMoveGS gs = do
     let (score, move) = minimaxPar gs False 0 8
-    case move of
-        (Just x) -> do
+    let Just x = move
+    if move == Just x 
+        then do
             printf "Computer move: '%s'.\n\n"
                    (getComputerLetter x)
             return x
-        Nothing -> error "Invalid move: Nothing"
+        else error "Invalid move: Nothing"
 
 playGame :: MancalaGameState -> IO()
 -- if game is over print results
 playGame (MancalaGameState board computer player) | rowEmpty board Computer || rowEmpty board Player2 = do
     putStrLn $ "Game over. " ++ winString
     printGameState (MancalaGameState board computer player)
-    where winString = case (evaluate (MancalaGameState board computer player)) of
-            x | x > 0 -> "Winner is " ++ (show player)
-            x | x < 0 -> "Winner is " ++ (show other)
-            0         -> "Tie."
-            where other | player == Computer = Player2
-                        | otherwise = Computer
+        where   
+            other   | player == Computer = Player2
+                    | otherwise = Computer
+            winString | (evaluate (MancalaGameState board computer player) > 0) = "Winner is " ++ (show player)
+                      | (evaluate (MancalaGameState board computer player) < 0) = "Winner is " ++ (show other)
+                      | otherwise = "Tie."
 -- else print current game state and get next move
 playGame (MancalaGameState board Computer Computer) = do
     printGameState (MancalaGameState board Computer Computer) 
