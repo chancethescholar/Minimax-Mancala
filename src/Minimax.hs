@@ -42,6 +42,7 @@ minimaxPar gs minimize depth depthlimit =
         scorePossPairs = zip scores wrappedPossibilities in
     minOrMax scorePossPairs
 
+{-
 alphabeta   :: (GameState a) => a -> Int -> Int -> Int -> Int -> (Int, Maybe Int)
 alphabeta gs _ _ _ _ | gameOver gs = (evaluate gs, Nothing)
 alphabeta gs depth depthlimit _ _ | depth == depthlimit = (evaluate gs, Nothing)
@@ -78,3 +79,4 @@ alphabetaHelper gs (x:xs) a b depth depthlimit =
     if (newBeta <= a)
         then newBeta
         else alphabetaHelper gs xs a (min b newBeta) depth depthlimit
+-}
